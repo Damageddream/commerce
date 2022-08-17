@@ -69,9 +69,9 @@ def new_listing(request):
         title = request.POST["title"], 
         description = request.POST["description"], 
         starting_bid = request.POST["starting_bid"], 
-        image_url = request.POST["image"],)
+        image_url = request.POST["image"],
+        category = request.POST.get("category", "example"))
         lisiting.save()
-        #category = request.POST["category"]
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/new_listing.html",{

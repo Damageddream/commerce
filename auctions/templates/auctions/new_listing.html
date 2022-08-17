@@ -9,22 +9,22 @@
     {% csrf_token %}
 
     <div class="form-group">
-        <input class="form-control" autofocus type="text" name="title" placeholder="title">
+        <input class="form-control" autofocus type="text" name="title" placeholder="title" required>
     </div>
     <div class="form-group">
-        <input class="form-control" autofocus type="text" name="description" placeholder="description">
+        <input class="form-control" autofocus type="text" name="description" placeholder="description" required>
     </div>
     <div class="form-group">
-        <input class="form-control" autofocus type="number" name="starting_bid" placeholder="bid">
+        <input class="form-control" autofocus type="number" name="starting_bid" placeholder="bid" required>
     </div>
     <div class="form-group">
         <input class="form-control" autofocus type="url" name="image" placeholder="image url">
     </div>
     <div class="form-group">
-        <select class="form-control">
+        <select class="form-control" name="category">
             <option value="" disabled selected>Select category</option>
             {% for item in categories %}
-                <option value="category"> {{ item }} </option>
+                <option value="{{ item }}"> {{ item }} </option>
             {% endfor %}
         </select>
     </div>
