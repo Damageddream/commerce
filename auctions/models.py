@@ -29,3 +29,5 @@ class Comments(models.Model):
     comment_listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name = "comment_listing")
     def __str__(self):
         return f"{self.comment_text}"
+class Watchlist(models.Model):
+    watchlist_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist_user")

@@ -3,12 +3,17 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import User, Listing, Bids, Comments
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    list = Listing.objects.all()
+    
+    return render(request, "auctions/index.html", {
+        "listings": list
+    })
 
 
 def login_view(request):
@@ -77,3 +82,12 @@ def new_listing(request):
         return render(request, "auctions/new_listing.html",{
             "categories": category
         })
+def listing(request, listing_id):
+    listing = Listing.objects.get(id=listing_id)
+    return render(request, "auctions/listing.html", {
+        "listing": listing
+    })
+
+@login_required
+def watchlist(request):
+    return render(request, "auctions/watchlist.html")
