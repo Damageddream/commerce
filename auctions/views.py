@@ -75,7 +75,8 @@ def new_listing(request):
         description = request.POST["description"], 
         starting_bid = request.POST["starting_bid"], 
         image_url = request.POST["image"],
-        category = request.POST.get("category", "example"))
+        category = request.POST.get("category", "example"),
+        )
         lisiting.save()
         return HttpResponseRedirect(reverse("index"))
     else:
@@ -84,9 +85,16 @@ def new_listing(request):
         })
 def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
-    return render(request, "auctions/listing.html", {
+    if request.method == "POST":
+
+        listing.watchers.add(request.user.id)
+        return render(request, "auctions/listing.html", {
         "listing": listing
     })
+    else:
+        return render(request, "auctions/listing.html", {
+            "listing": listing
+        })
 
 @login_required
 def watchlist(request):
