@@ -12,6 +12,7 @@ class Listing(models.Model):
     starting_bid = models.IntegerField()
     image_url = models.URLField(max_length=200)
     category = models.CharField(max_length=64)
+    watchers = models.ManyToManyField(User, blank=True, related_name="watchers")
 
     def __str__(self):
         return f"{self.title}"
@@ -29,5 +30,9 @@ class Comments(models.Model):
     comment_listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name = "comment_listing")
     def __str__(self):
         return f"{self.comment_text}"
+
 class Watchlist(models.Model):
-    watchlist_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist_user")
+    watchlister = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlister")
+    watchlist= models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="watchlist")
+
+    
