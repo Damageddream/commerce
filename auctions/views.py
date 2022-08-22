@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .models import User, Listing, Bids, Comments
 
@@ -86,11 +87,42 @@ def new_listing(request):
 def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
     if request.method == "POST":
+        if "watchlist" in request.POST:
+            if request.user in listing.watchers.all():
+                listing.watchers.remove(request.user)
+                listing.save()
+                print(listing.watchers.all())
+                return render(request, "auctions/listing.html", {
+                "listing": listing,
+                "logged_user": request.user,
+                "watchers": listing.watchers.all})
+            else:    
+                listing.watchers.add(request.user)
+                listing.save()
+                print(listing.watchers.all())
+                return render(request, "auctions/listing.html", {
+                "listing": listing,
+                "logged_user": request.user,
 
-        listing.watchers.add(request.user.id)
-        return render(request, "auctions/listing.html", {
-        "listing": listing
-    })
+            })
+        elif "starting_bid" in request.POST:
+            if request.POST["starting_bid"] < listing.starting_bid:
+                   messages.warning(request, f"minimial starting bid is {listing.starting_bid}")
+                   return HttpResponseRedirect(reverse("listing", args=listing.id))
+            else:
+                listing.current_bid = request.POST["starting_bid"]
+                return HttpResponseRedirect(reverse("listing", args=listing.id))
+        elif "current_bid" in request.POST:
+            if request.POST["current_bid"] < listing.current_bid:
+                   messages.warning(request, f"minimial bid is more than {listing.current_bid}")
+                   return HttpResponseRedirect(reverse("listing", args=listing.id))
+            else:
+                listing.current_bid = request.POST["current_bid"]
+                return HttpResponseRedirect(reverse("listing", args=listing.id))
+
+
+
+
     else:
         return render(request, "auctions/listing.html", {
             "listing": listing

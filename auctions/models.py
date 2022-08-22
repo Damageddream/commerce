@@ -10,6 +10,7 @@ class Listing(models.Model):
     title = models.CharField(max_length=64, )
     description = models.TextField(max_length=300)
     starting_bid = models.IntegerField()
+    current_bid = models.IntegerField()
     image_url = models.URLField(max_length=200)
     category = models.CharField(max_length=64)
     watchers = models.ManyToManyField(User, blank=True, related_name="watchers")
