@@ -88,6 +88,7 @@ def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
     if request.method == "POST":
         if "watchlist" in request.POST:
+            print
             if request.user in listing.watchers.all():
                 listing.watchers.remove(request.user)
                 listing.save()
@@ -106,19 +107,22 @@ def listing(request, listing_id):
 
             })
         elif "starting_bid" in request.POST:
-            if request.POST["starting_bid"] < listing.starting_bid:
+            if int(request.POST.get("starting_bid")) < listing.starting_bid:
                    messages.warning(request, f"minimial starting bid is {listing.starting_bid}")
-                   return HttpResponseRedirect(reverse("listing", args=listing.id))
+                   return HttpResponseRedirect(reverse("listing", args=[listing.id]))
             else:
-                listing.current_bid = request.POST["starting_bid"]
-                return HttpResponseRedirect(reverse("listing", args=listing.id))
+                listing.current_bid = int(request.POST.get("starting_bid"))
+                listing.save()
+                print(type(request.POST.get("starting_bid")))
+                return HttpResponseRedirect(reverse("listing", args=[listing.id]))
         elif "current_bid" in request.POST:
-            if request.POST["current_bid"] < listing.current_bid:
+            if int(request.POST.get("current_bid")) < listing.current_bid:
                    messages.warning(request, f"minimial bid is more than {listing.current_bid}")
-                   return HttpResponseRedirect(reverse("listing", args=listing.id))
+                   return HttpResponseRedirect(reverse("listing", args=[listing.id]))
             else:
-                listing.current_bid = request.POST["current_bid"]
-                return HttpResponseRedirect(reverse("listing", args=listing.id))
+                listing.current_bid = int(request.POST.get("current_bid"))
+                listing.save()
+                return HttpResponseRedirect(reverse("listing", args=[listing.id]))
 
 
 
