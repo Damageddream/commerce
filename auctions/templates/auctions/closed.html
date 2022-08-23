@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if listing.winner == request.user %}
+
+<h1>Congratulations {{ listing.winner }} you won the auction!</h1>
+
+{% else %}
+
+<h1>Auction was closed</h1>
+
+{% endif %}
+    
+{% endblock %}

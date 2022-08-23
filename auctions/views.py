@@ -86,6 +86,11 @@ def new_listing(request):
         })
 def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
+    print(listing.winner)
+    if listing.winner != None:
+        return render(request, "auctions/closed.html", {
+            "listing": listing,
+        })
     if request.method == "POST":
         if "watchlist" in request.POST:
             print
@@ -111,27 +116,55 @@ def listing(request, listing_id):
                    messages.warning(request, f"minimial starting bid is {listing.starting_bid}")
                    return HttpResponseRedirect(reverse("listing", args=[listing.id]))
             else:
-                listing.current_bid = int(request.POST.get("starting_bid"))
+                bid = Bids(bidder= request.user, bid=(int(request.POST.get("starting_bid"))))
+                bid.save()
+                listing.current_bid.add(bid)
+                listing.current_bid_default=bid.bid
                 listing.save()
-                print(type(request.POST.get("starting_bid")))
+                ordered_bids = listing.current_bid.all().order_by("bid")
+                highets = ordered_bids.last()
+                print(ordered_bids)
+                print(request.POST.get("starting_bid"))
                 return HttpResponseRedirect(reverse("listing", args=[listing.id]))
         elif "current_bid" in request.POST:
-            if int(request.POST.get("current_bid")) < listing.current_bid:
+            if int(request.POST.get("current_bid")) <= listing.current_bid_default:
                    messages.warning(request, f"minimial bid is more than {listing.current_bid}")
                    return HttpResponseRedirect(reverse("listing", args=[listing.id]))
             else:
-                listing.current_bid = int(request.POST.get("current_bid"))
+                bid = Bids(bidder= request.user, bid=(int(request.POST.get("current_bid"))))
+                bid.save()
+                listing.current_bid.add(bid)
+                listing.current_bid_default=bid.bid
                 listing.save()
+                ordered_bids = listing.current_bid.all().order_by("bid")
+                highets = ordered_bids.last()
+                (print(ordered_bids, highets.bidder ))
                 return HttpResponseRedirect(reverse("listing", args=[listing.id]))
-
+        elif "closed" in request.POST:
+            ordered_bids = listing.current_bid.all().order_by("bid")
+            highets = ordered_bids.last()
+            listing.winner = highets.bidder
+            listing.save()
+            return HttpResponseRedirect(reverse("listing", args=[listing.id]))
+        elif "comment_text" in request.POST:
+            comment = Comments(commenter = request.user, comment_text=request.POST["comment_text"],)
+            comment.save()
+            listing.comment.add(comment)
+            listing.save()
+            return HttpResponseRedirect(reverse("listing", args=[listing.id]))
 
 
 
     else:
         return render(request, "auctions/listing.html", {
-            "listing": listing
+            "listing": listing,
+            "comments": listing.comment.all()
         })
 
 @login_required
-def watchlist(request):
-    return render(request, "auctions/watchlist.html")
+def watchlist(request, user_id):
+    w_user = User.objects.get(id=user_id)
+    watchlist_items = w_user.watchers.all()
+    return render(request, "auctions/watchlist.html", {
+        "watchlist": watchlist_items,
+    })
