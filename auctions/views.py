@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -113,7 +113,7 @@ def listing(request, listing_id):
             })
         elif "starting_bid" in request.POST:
             if int(request.POST.get("starting_bid")) < listing.starting_bid:
-                   messages.warning(request, f"minimial starting bid is {listing.starting_bid}")
+                   messages.warning(request, f"minimial starting bid is {listing.starting_bid}$")
                    return HttpResponseRedirect(reverse("listing", args=[listing.id]))
             else:
                 bid = Bids(bidder= request.user, bid=(int(request.POST.get("starting_bid"))))
@@ -128,7 +128,7 @@ def listing(request, listing_id):
                 return HttpResponseRedirect(reverse("listing", args=[listing.id]))
         elif "current_bid" in request.POST:
             if int(request.POST.get("current_bid")) <= listing.current_bid_default:
-                   messages.warning(request, f"minimial bid is more than {listing.current_bid}")
+                   messages.warning(request, f"minimial bid is more than {listing.current_bid_default}$")
                    return HttpResponseRedirect(reverse("listing", args=[listing.id]))
             else:
                 bid = Bids(bidder= request.user, bid=(int(request.POST.get("current_bid"))))
@@ -144,6 +144,7 @@ def listing(request, listing_id):
             ordered_bids = listing.current_bid.all().order_by("bid")
             highets = ordered_bids.last()
             listing.winner = highets.bidder
+            listing.active = False
             listing.save()
             return HttpResponseRedirect(reverse("listing", args=[listing.id]))
         elif "comment_text" in request.POST:
@@ -167,4 +168,31 @@ def watchlist(request, user_id):
     watchlist_items = w_user.watchers.all()
     return render(request, "auctions/watchlist.html", {
         "watchlist": watchlist_items,
+    })
+
+def category(request):
+    listing = Listing.objects.all()
+    categories = []
+    for item in listing:
+        if item.category in categories:
+            next
+        else:
+            categories.append(item.category)
+
+    return render(request, "auctions/category.html", {
+        "listing": listing,
+        "categories": categories,
+    })
+def category_listing(request, category):
+    listing = Listing.objects.all()
+    listing_id = []
+
+    for item in listing:
+        print(item.active)
+        if category in item.category and item.active == True:
+            listing_id.append(item)
+    print(listing_id)
+    return render(request, "auctions/category_listing.html", {
+        "listing_id": listing_id,
+        "listing": listing
     })

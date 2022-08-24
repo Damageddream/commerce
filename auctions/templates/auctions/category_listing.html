@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<ul>
+{% for item in listing_id %}
+{% if item.active == True %}
+<div class="line"></div>
+<div>
+    <li><div class="grey">Title:</div> {{ item.title }}</li>
+    <li><div class="grey">Description:</div>{{ item.description }}</li>
+    <li><div class="grey">Current bid:</div> {{ item.starting_bid }}$</li>
+    {% if item.image_url %}
+    <li><div class="grey">Image:</div><img src="{{ item.image_url }}"></li>
+    {% endif %}
+    <li><a href="{% url 'listing' item.id %}">Browse</a></li>
+    {% endif %}   
+{% empty %}
+    <li>No listings in that category</li>
+{% endfor %}
+<div class="line"></div>
+</ul>
+{% endblock %}

@@ -2,9 +2,12 @@
 
 {% block body %}
     <h2>Watchlist</h2>
+    <ul>
     {% for item in watchlist %}
-     {{ item }}
+        <li><a href="{% url 'listing' item.id %}">{{ item }}</a></li>
+    {% empty %}
+        <li> You have nothing on Your watchlist</li>
     {% endfor %}
-
+    </ul>
     
 {% endblock %}

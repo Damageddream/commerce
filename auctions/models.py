@@ -28,6 +28,7 @@ class Listing(models.Model):
     watchers = models.ManyToManyField(User, blank=True, related_name="watchers")
     winner = models.ForeignKey(User, on_delete=models.PROTECT, related_name="winner", blank=True, null=True)
     comment = models.ManyToManyField(Comments, blank=True, related_name="comment")
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.title}"

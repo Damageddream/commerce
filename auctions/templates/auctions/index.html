@@ -1,13 +1,26 @@
 {% extends "auctions/layout.html" %}
 
+
 {% block body %}
     <h2>Active Listings</h2>
         <ul>
             {% for list in listings %}
-                <li>Title: {{ list.title }} Description: {{ list.description }} Current bid: {{ list.starting_bid }} <img src="{{ list.image_url }}"> <a href="{% url 'listing' list.id %}">Browse</a> </li>
-            {% empty %}
-                <li>No current listings</li>
+                {% if list.active == True %}
+                <div class="line"></div>
+                <div>
+                    <li><div class="grey">Title:</div> {{ list.title }}</li>
+                    <li><div class="grey">Description:</div>{{ list.description }}</li>
+                    <li><div class="grey">Current bid:</div> {{ list.current_bid_default }}$</li>
+                    {% if list.image_url %}
+                    <li><div class="grey">Image:</div><img src="{{ list.image_url }}"></li>
+                    {% endif %}
+                    <li><a href="{% url 'listing' list.id %}">Browse</a></li>
+                 {% endif %}   
+                {% empty %}
+                    <li>No current listings</li>
             {% endfor %}
+            </div>
+            <div class="line"></div>
         </ul>
     
 {% endblock %}
